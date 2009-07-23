@@ -1,0 +1,52 @@
+def useIvy = false
+
+if(useIvy) includeTool << gant.tools.Ivy
+includeTool << gant.tools.Execute
+ant.taskdef(name:'groovyc', classname:'org.codehaus.groovy.ant.Groovyc')
+
+def baseDir = new File(".").absolutePath
+def srcDir = new File(baseDir, "src")
+def wkDir = new File(baseDir, "working").absolutePath
+def servicesDir = new File(new File(wkDir, 'META-INF'), 'services').absolutePath
+def jarName = new File(baseDir, "WithLog.jar").absolutePath
+def classpathName = 'withlog.build.classpath'
+
+
+target(resolve: "Resolves the classpath libraries") {
+	if(!useIvy) {
+		path(id:classpathName) {
+			fileset(dir:'lib') {
+				include(name:'**/*.jar')
+			}
+		}
+	} else {
+		ivy.cachepath(
+			pathid:classpathName,
+			organisation:'log4j', module:'log4j', revision:'1.2.9', inline:true
+		)
+	}
+}
+
+target(clean:"Cleans up") {
+	delete(dir:wkDir, failOnError:false)
+	delete(file:jarName, failOnError:false)
+	if(useIvy) ivy.cleancache()
+}
+
+target(makeWkDir: "Create the working directory for compiling") {
+	mkdir(dir:wkDir)
+	mkdir(dir:servicesDir)
+}
+
+target(compile:"Compiles the package") {
+	depends(makeWkDir, resolve)
+	groovyc(srcdir:srcDir, destdir:wkDir, verbose:true, listfiles:true, classpathref:classpathName)
+}
+
+target(makeJar:"Creates a JAR with the transform") {
+	depends(makeWkDir, compile)
+	copy(file:new File(baseDir, 'org.codehaus.groovy.transform.ASTTransformation'), todir:servicesDir, verbose:true)
+	jar(destfile:jarName, basedir:wkDir, duplicate:'fail', level:9, index:true)
+}
+
+setDefaultTarget(makeJar)
