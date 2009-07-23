@@ -1,0 +1,9 @@
+Adds a @WithLog AST for Groovy.  This attaches a Log4J Logger to the annotated class.
+
+@WithLog
+class Foo {
+	static logStaticMsg() { log.info("This is a static message!") }
+	def logInstanceMsg() { log.info("This is an instance message!") }
+}
+
+Released under the WTFPL.  See LICENSE for more information.
