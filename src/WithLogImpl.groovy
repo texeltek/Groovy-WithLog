@@ -49,10 +49,18 @@ public class WithLogImpl implements ASTTransformation {
 		}) ?: []
 	}
 
+	def containsAnnotationPackageImport(fileNode) {
+		def pkgName = annotationClass.package.name
+		def pkgs = fileNode.importPackages*.toString()
+		return [
+			"${pkgName}", "${pkgName}.", "${pkgName}.*"
+		]*.toString().find { pkgs.contains(it) }
+	}
+
 	def rawAnnotationClasses(fileNode) {
 		def someImport = fileNode.imports?.find {
 			it.type.name.endsWith(".WithLog")
-		}
+		} || containsAnnotationPackageImport(fileNode)
 		def allowRaw = !Boolean.valueOf(System.properties['sublog.withLog.disableRaw'])
 		if(!someImport && allowRaw) {
 			fileNode.addImport("WithLog", new ClassNode(annotationClass))
@@ -66,13 +74,9 @@ public class WithLogImpl implements ASTTransformation {
 	}
 
 	def packageImportAnnotationClasses(fileNode) {
-		def pkgName = annotationClass.package.name
-		def pkgs = fileNode.importPackages*.toString()
-		def isImported = [
-			"${pkgName}", "${pkgName}.", "${pkgName}.*"
-		]*.toString().find { pkgs.contains(it) }
+		def isImported = containsAnnotationPackageImport(fileNode)
 		if(!isImported) {
-			log("Did not find import of $pkgName in: $fileNode.importPackages")
+			log("Did not find import in: ${fileNode.importPackages}")
 			return []
 		}
 		return findAllWithAnnotation(fileNode) {
