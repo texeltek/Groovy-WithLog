@@ -27,11 +27,12 @@ public class WithLogImpl implements ASTTransformation {
 		foundClasses.addAll(aliasedAnnotationClasses(fileNode))
 		log("Getting package import classes")
 		foundClasses.addAll(packageImportAnnotationClasses(fileNode))
-		//foundClasses.addAll(rawAnnotationClasses(fileNode))
+		log("Getting the raw annotation classes")
+		foundClasses.addAll(rawAnnotationClasses(fileNode))
 	
-		log("Found $foundClasses")	
+		log("Found $foundClasses in ${sourceUnit.name}")	
 		foundClasses.each { ClassNode classNode ->
-			log("Adding log to $classNode.name")
+			log("Adding log to ${classNode.name} of ${sourceUnit.name}")
 			classNode.addField("log",
 				ClassNode.ACC_PRIVATE | ClassNode.ACC_STATIC | ClassNode.ACC_FINAL,
 				loggerNode,
@@ -46,6 +47,22 @@ public class WithLogImpl implements ASTTransformation {
 				return impl(annotationNode)
 			}
 		}) ?: []
+	}
+
+	def rawAnnotationClasses(fileNode) {
+		def someImport = fileNode.imports?.find {
+			it.type.name.endsWith(".WithLog")
+		}
+		def allowRaw = !Boolean.valueOf(System.properties['sublog.withLog.disableRaw'])
+		if(!someImport && allowRaw) {
+			fileNode.addImport("WithLog", new ClassNode(annotationClass))
+			return findAllWithAnnotation(fileNode) {
+				it.classNode.name == annotationClass.simpleName
+			}
+		} else {
+			log("Skipping raw annotation: Allowed? $allowRaw. Overriding import? $someImport.")
+			return []
+		}
 	}
 
 	def packageImportAnnotationClasses(fileNode) {

@@ -1,5 +1,3 @@
-import com.smokejumperit.sublog.*
-
 @WithLog
 class Foo {
 	static doLog() { 
