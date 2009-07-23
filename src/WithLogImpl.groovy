@@ -1,4 +1,4 @@
-package sublog
+package com.smokejumperit.sublog
 
 import org.codehaus.groovy.transform.*
 import org.codehaus.groovy.control.*
@@ -9,20 +9,29 @@ import org.apache.log4j.Logger
 @GroovyASTTransformation(phase=CompilePhase.CONVERSION)
 public class WithLogImpl implements ASTTransformation {
 
+	def enableLogging = false
+
 	// Cached values
 	final ClassNode loggerNode = new ClassNode(Logger)
 	final Class annotationClass = WithLog
 
   public void visit(ASTNode[] nodes, SourceUnit sourceUnit) {
-		ModuleNode fileNode = nodes[1] 
+		log("Processing nodes: $nodes")
+		ModuleNode fileNode = nodes[0] 
 
+		log("Getting classes")
 		def foundClasses = [] as Set
+		log("Getting fully qualified classes")
 		foundClasses.addAll(fullyQualifiedAnnotationClasses(fileNode))
+		log("Getting aliased classes")
 		foundClasses.addAll(aliasedAnnotationClasses(fileNode))
+		log("Getting package import classes")
 		foundClasses.addAll(packageImportAnnotationClasses(fileNode))
 		//foundClasses.addAll(rawAnnotationClasses(fileNode))
-		
+	
+		log("Found $foundClasses")	
 		foundClasses.each { ClassNode classNode ->
+			log("Adding log to $classNode.name")
 			classNode.addField("log",
 				ClassNode.ACC_PRIVATE | ClassNode.ACC_STATIC | ClassNode.ACC_FINAL,
 				loggerNode,
@@ -40,8 +49,15 @@ public class WithLogImpl implements ASTTransformation {
 	}
 
 	def packageImportAnnotationClasses(fileNode) {
-		def isImported = fileNode.importPackages.contains(annotationClass.package.name)
-		if(!isImported) return []
+		def pkgName = annotationClass.package.name
+		def pkgs = fileNode.importPackages*.toString()
+		def isImported = [
+			"${pkgName}", "${pkgName}.", "${pkgName}.*"
+		]*.toString().find { pkgs.contains(it) }
+		if(!isImported) {
+			log("Did not find import of $pkgName in: $fileNode.importPackages")
+			return []
+		}
 		return findAllWithAnnotation(fileNode) {
 			it.classNode.name == annotationClass.simpleName
 		}
@@ -62,6 +78,8 @@ public class WithLogImpl implements ASTTransformation {
 			it.classNode.name == annotationClass.name 
 		}
 	}
+
+	def log(msg) { if(enableLogging) println msg }
 
 }
 
