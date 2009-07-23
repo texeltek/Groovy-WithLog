@@ -1,4 +1,4 @@
-package com.smokejumperit.logging
+package sublog
 
 import org.codehaus.groovy.transform.*
 import org.codehaus.groovy.control.*

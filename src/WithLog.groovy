@@ -1,3 +1,3 @@
-package com.smokejumperit.logging
+package sublog
 
 public @interface WithLog {}
