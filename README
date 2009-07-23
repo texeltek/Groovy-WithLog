@@ -1,5 +1,5 @@
 // Adds a @WithLog AST for Groovy.  This attaches a Log4J Logger to the annotated class.
-import sublog.*
+import com.smokejumperit.sublog.*
 
 @WithLog
 class Foo {
@@ -8,3 +8,8 @@ class Foo {
 }
 
 // Released under the WTFPL.  See LICENSE for more information.
+
+// To install this global transform in your packge, check out the project
+// and then run:
+//   gant makeJar
+// Drop the resulting JAR in your classpath and away you go!
