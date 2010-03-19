@@ -7,15 +7,17 @@ import org.codehaus.groovy.ast.expr.*
 import org.apache.log4j.Logger
 
 @GroovyASTTransformation(phase=CompilePhase.CONVERSION)
-public class WithLogImpl implements ASTTransformation {
+class WithLogImpl implements ASTTransformation {
 
 	def enableLogging = false
 
 	// Cached values
-	final ClassNode loggerNode = new ClassNode(WithLogLogger)
+	final ClassNode loggerNode = new ClassNode(
+    System.properties["withLog.apacheLogger"] ? Logger : WithLogLogger
+  )
 	final Class annotationClass = WithLog
 
-  public void visit(ASTNode[] nodes, SourceUnit sourceUnit) {
+  void visit(ASTNode[] nodes, SourceUnit sourceUnit) {
 		log("Processing nodes: $nodes")
 		ModuleNode fileNode = nodes[0] 
 
