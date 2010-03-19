@@ -1,4 +1,4 @@
-//usePlugin 'java'
+usePlugin 'java'
 usePlugin 'groovy'
 usePlugin 'osgi'
 usePlugin 'maven'

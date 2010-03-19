@@ -12,7 +12,7 @@ public class WithLogImpl implements ASTTransformation {
 	def enableLogging = false
 
 	// Cached values
-	final ClassNode loggerNode = new ClassNode(Logger)
+	final ClassNode loggerNode = new ClassNode(WithLogLogger)
 	final Class annotationClass = WithLog
 
   public void visit(ASTNode[] nodes, SourceUnit sourceUnit) {
