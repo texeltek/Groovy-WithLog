@@ -1,0 +1,67 @@
+//usePlugin 'java'
+usePlugin 'groovy'
+usePlugin 'osgi'
+usePlugin 'maven'
+
+buildscript {
+  repositories {
+    mavenRepo urls:'http://repo.smokejumperit.com'
+  }
+  dependencies {
+    classpath 'com.smokejumperit:gradle-plugins:0.5.1'
+  }
+}
+
+configurations {
+    deployerJars
+}
+
+
+/*
+  Repo/dependencies config
+*/
+
+repositories {
+  mavenRepo urls: 'http://repository.codehaus.org/'
+  mavenRepo urls: 'http://download.java.net/maven/2/'
+  mavenRepo urls: 'http://scala-tools.org/repo-releases/' 
+  mavenRepo urls: 'http://jansi.fusesource.org/repo/release'
+  mavenRepo urls: 'http://jline.sourceforge.net/m2repo'
+  mavenRepo urls: 'http://www.aQute.biz/repo'
+  mavenRepo urls: 'http://repository.jboss.org/maven2/'
+  mavenRepo urls: 'http://repo.smokejumperit.com'
+  mavenCentral()
+}
+dependencies {
+	groovy "org.codehaus.groovy:groovy:$groovyVersion"
+
+  deployerJars 'org.apache.maven.wagon:wagon-ssh:1.0-beta-2'
+
+  compile "log4j:log4j:1.2.+"
+
+}
+
+configure(jar.osgi) {
+  instruction 'Import-Package', '*'
+  instruction 'Export-Package', '*'
+}
+
+uploadArchives { 
+  repositories.mavenDeployer {
+    def repoUser = System.properties['sjit.repo.user']
+    configuration = configurations.deployerJars
+    repository(url: "scp://repo.smokejumperit.com/home/$repoUser/repo.smokejumperit.com/") {
+      authentication(
+        userName: repoUser,
+        privateKey: new File(System.properties['sjit.repo.keyFile']).absolutePath, 
+        passphrase: System.properties['sjit.repo.passphrase']
+      )   
+      pom {
+        groupId=mavenGroupId
+        artifactId=mavenArtifactId
+        version=version
+      }
+    }
+  }
+}
+
