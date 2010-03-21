@@ -65,3 +65,4 @@ uploadArchives {
   }
 }
 
+uploadArchives.dependsOn test
