@@ -53,7 +53,7 @@ uploadArchives {
     repository(url: "scp://repo.smokejumperit.com/home/$repoUser/repo.smokejumperit.com/") {
       authentication(
         userName: repoUser,
-        privateKey: new File(System.properties['sjit.repo.keyFile'])?.absolutePath, 
+        privateKey: new File(System.getProperty('sjit.repo.keyFile', '.')?.absolutePath, 
         passphrase: System.properties['sjit.repo.passphrase']
       )   
       pom {
