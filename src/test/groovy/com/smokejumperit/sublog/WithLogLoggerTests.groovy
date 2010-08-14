@@ -1,8 +1,9 @@
 package com.smokejumperit.sublog
 
 import org.apache.log4j.Level
+//import groovy.util.GroovyTestCase
 
-class WithLogLoggerTests {
+class WithLogLoggerTests /*extends GroovyTestCase*/ {
 
   void testLoggerRunsClosures() {
     def log = WithLogLogger.getLogger(this.class)

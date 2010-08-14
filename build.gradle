@@ -1,16 +1,7 @@
-usePlugin 'java'
-usePlugin 'groovy'
-usePlugin 'osgi'
-usePlugin 'maven'
-
-buildscript {
-  repositories {
-    mavenRepo urls:'http://repo.smokejumperit.com'
-  }
-  dependencies {
-    classpath 'com.smokejumperit:gradle-plugins:0.5.1'
-  }
-}
+apply plugin:'java'
+apply plugin:'groovy'
+apply plugin:'osgi'
+apply plugin:'maven'
 
 configurations {
     deployerJars
@@ -37,13 +28,9 @@ dependencies {
 
   deployerJars 'org.apache.maven.wagon:wagon-ssh:1.0-beta-2'
 
-  compile "log4j:log4j:1.2.+"
+  compile "log4j:log4j:[1.2,1.3)"
+  compile "junit:junit:[4,5)"
 
-}
-
-configure(jar.osgi) {
-  instruction 'Import-Package', '*'
-  instruction 'Export-Package', '*'
 }
 
 uploadArchives { 
