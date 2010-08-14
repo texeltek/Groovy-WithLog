@@ -1,3 +1,8 @@
+
+// Without the following two lines, you get a NPE in Category
+import org.apache.log4j.BasicConfigurator
+BasicConfigurator.configure()
+
 @WithLog
 class Foo {
 	static doLog() { 

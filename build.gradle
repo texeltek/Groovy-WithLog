@@ -3,20 +3,6 @@ apply plugin:'groovy'
 apply plugin:'osgi'
 apply plugin:'maven'
 
-/*
-buildscript {
-  repositories {
-    mavenRepo urls:'http://repo.smokejumperit.com'
-    mavenCentral()
-  }
-  dependencies {
-    classpath 'com.smokejumperit:gradle-plugins:0.6.1-SNAPSHOT'
-    classpath 'org.apache.ant:ant:[1.8,1.9)'
-  }
-}
-*/
-
-
 configurations {
     deployerJars
 }
@@ -26,6 +12,7 @@ configurations {
 */
 
 repositories {
+  mavenRepo urls: 'http://mirrors.ibiblio.org/pub/mirrors/maven2/'
   mavenRepo urls: 'http://repository.codehaus.org/'
   mavenRepo urls: 'http://download.java.net/maven/2/'
   mavenRepo urls: 'http://scala-tools.org/repo-releases/' 

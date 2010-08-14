@@ -35,10 +35,15 @@ class WithLogImpl implements ASTTransformation {
 		log("Found $foundClasses in ${sourceUnit.name}")	
 		foundClasses.each { ClassNode classNode ->
 			log("Adding log to ${classNode.name} of ${sourceUnit.name}")
-			classNode.addField("log",
-				ClassNode.ACC_PRIVATE | ClassNode.ACC_STATIC | ClassNode.ACC_FINAL,
-				loggerNode,
-				new StaticMethodCallExpression(loggerNode, "getLogger", new ClassExpression(classNode))
+			classNode.addProperty(
+        new PropertyNode(
+          "log",
+          ClassNode.ACC_PUBLIC | ClassNode.ACC_STATIC | ClassNode.ACC_FINAL,
+          loggerNode,
+          classNode,
+          new StaticMethodCallExpression(loggerNode, "getLogger", new ClassExpression(classNode)),
+          null, null
+        )
 			)
 		}
 	}
