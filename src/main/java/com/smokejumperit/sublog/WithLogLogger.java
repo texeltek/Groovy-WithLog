@@ -26,7 +26,7 @@ public class WithLogLogger extends Logger {
       log.error("No class provided to 'getLogger'", new StackTraceHolder());
       throw new IllegalArgumentException("Must have non-null class");
     }
-    return new WithLogLogger(clazz.getName());
+    return (WithLogLogger) Logger.getLogger(clazz.getName(), new WithLogLoggerFactory());
   }
 
   public void trace(Closure c) {
