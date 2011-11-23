@@ -2,3 +2,5 @@ WithLog*.jar
 working
 build
 .gradle
+.idea
+*.iml
